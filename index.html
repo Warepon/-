@@ -65,7 +65,19 @@
     <div id="celebrationScreen" class="celebration">🎉 Success! 🎉</div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <audio id="bgm" loop>
-        <source src="your-audio-file.mp3" type="audio/mpeg">
+        <source src="your-bgm.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="successSound">
+        <source src="success-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="failSound">
+        <source src="fail-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="quitSound">
+        <source src="quit-sound.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
     <script>
@@ -73,6 +85,9 @@
         const ctx = canvas.getContext('2d');
         const celebrationScreen = document.getElementById('celebrationScreen');
         const bgm = document.getElementById('bgm');
+        const successSound = document.getElementById('successSound');
+        const failSound = document.getElementById('failSound');
+        const quitSound = document.getElementById('quitSound');
 
         let score = 100;
         let isGameOver = false;
@@ -130,6 +145,7 @@
         }
 
         function nextLevel() {
+            successSound.play();
             score *= 2;
             stage++;
             celebrationScreen.style.display = 'block';
@@ -145,12 +161,14 @@
             const gameOverScreen = document.getElementById('gameOverScreen');
             gameOverScreen.style.display = 'block';
             if (!isWin) {
+                failSound.play();
                 document.getElementById('gameMessage').textContent = '모든 점수를 잃었습니다';
                 document.getElementById('finalScore').textContent = '';
             }
         }
 
         function quitGame() {
+            quitSound.play();
             isGameOver = true;
             quit = true;
             const gameOverScreen = document.getElementById('gameOverScreen');
