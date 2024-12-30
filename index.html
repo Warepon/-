@@ -11,14 +11,16 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: black;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
             color: white;
             font-family: Arial, sans-serif;
             position: relative;
         }
         canvas {
             border: 2px solid white;
-            background-color: #222;
+            background: linear-gradient(180deg, #444, #222);
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
         }
         .game-over {
             position: absolute;
@@ -30,6 +32,7 @@
             padding: 20px;
             border-radius: 10px;
             border: 2px solid black;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
         }
         .celebration {
             position: absolute;
@@ -51,9 +54,6 @@
             border: none;
             cursor: pointer;
         }
-        audio {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -64,30 +64,10 @@
     </div>
     <div id="celebrationScreen" class="celebration">🎉 Success! 🎉</div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <audio id="bgm" loop>
-        <source src="your-bgm.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <audio id="successSound">
-        <source src="success-sound.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <audio id="failSound">
-        <source src="fail-sound.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <audio id="quitSound">
-        <source src="quit-sound.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const celebrationScreen = document.getElementById('celebrationScreen');
-        const bgm = document.getElementById('bgm');
-        const successSound = document.getElementById('successSound');
-        const failSound = document.getElementById('failSound');
-        const quitSound = document.getElementById('quitSound');
 
         let score = 100;
         let isGameOver = false;
@@ -100,15 +80,33 @@
         }
 
         function drawDoors() {
-            ctx.fillStyle = 'white';
-            ctx.fillRect(200, 200, 100, 200); // Door 1
-            ctx.fillRect(500, 200, 100, 200); // Door 2
-            ctx.fillRect(300, 450, 200, 60); // Quit Door
+            // Door 1
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(200, 200, 100, 200);
+            ctx.strokeStyle = '#654321';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(200, 200, 100, 200);
+            ctx.fillStyle = '#222';
+            ctx.fillRect(235, 280, 30, 40); // Door handle
+
+            // Door 2
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(500, 200, 100, 200);
+            ctx.strokeStyle = '#654321';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(500, 200, 100, 200);
+            ctx.fillStyle = '#222';
+            ctx.fillRect(535, 280, 30, 40); // Door handle
+
+            // Quit Door
+            ctx.fillStyle = '#555';
+            ctx.fillRect(300, 450, 200, 60);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(300, 450, 200, 60);
 
             ctx.fillStyle = 'black';
             ctx.font = '24px Arial';
-            ctx.fillText('1', 240, 320);
-            ctx.fillText('2', 540, 320);
             ctx.fillText('겁쟁이의 쉼터', 330, 490);
         }
 
@@ -145,7 +143,6 @@
         }
 
         function nextLevel() {
-            successSound.play();
             score *= 2;
             stage++;
             celebrationScreen.style.display = 'block';
@@ -161,14 +158,12 @@
             const gameOverScreen = document.getElementById('gameOverScreen');
             gameOverScreen.style.display = 'block';
             if (!isWin) {
-                failSound.play();
                 document.getElementById('gameMessage').textContent = '모든 점수를 잃었습니다';
                 document.getElementById('finalScore').textContent = '';
             }
         }
 
         function quitGame() {
-            quitSound.play();
             isGameOver = true;
             quit = true;
             const gameOverScreen = document.getElementById('gameOverScreen');
@@ -210,7 +205,6 @@
         function initGame() {
             generateDoors();
             draw();
-            bgm.play();
         }
 
         initGame();
