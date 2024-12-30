@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Door Selection Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+        canvas {
+            border: 2px solid white;
+            background-color: #222;
+        }
+        .game-over {
+            position: absolute;
+            text-align: center;
+            font-size: 24px;
+            color: black;
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid black;
+        }
+        .celebration {
+            position: absolute;
+            text-align: center;
+            font-size: 32px;
+            color: yellow;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid yellow;
+            display: none;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameOverScreen" class="game-over">
+        <p id="gameMessage"></p>
+        <p id="finalScore"></p>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+    <div id="celebrationScreen" class="celebration">🎉 Success! 🎉</div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <audio id="bgm" loop>
+        <source src="your-audio-file.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const celebrationScreen = document.getElementById('celebrationScreen');
+        const bgm = document.getElementById('bgm');
+
+        let score = 100;
+        let isGameOver = false;
+        let stage = 1;
+        let correctDoor;
+        let quit = false;
+
+        function generateDoors() {
+            correctDoor = Math.random() < 0.5 ? 1 : 2;
+        }
+
+        function drawDoors() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(200, 200, 100, 200); // Door 1
+            ctx.fillRect(500, 200, 100, 200); // Door 2
+            ctx.fillRect(300, 450, 200, 60); // Quit Door
+
+            ctx.fillStyle = 'black';
+            ctx.font = '24px Arial';
+            ctx.fillText('1', 240, 320);
+            ctx.fillText('2', 540, 320);
+            ctx.fillText('겁쟁이의 쉼터', 330, 490);
+        }
+
+        function drawScore() {
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Score: ${score}`, 10, 20);
+            ctx.fillText(`Stage: ${stage}번째 도전`, 10, 50);
+            const probability = (100 / Math.pow(2, stage)).toFixed(2);
+            ctx.fillText(`Success Rate: ${probability}%`, 10, 80);
+            ctx.font = '30px Arial';
+            ctx.fillText('당신의 문을 선택하세요', 250, 50);
+        }
+
+        function handleDoorClick(x, y) {
+            if (x >= 200 && x <= 300 && y >= 200 && y <= 400) {
+                // Door 1 clicked
+                if (correctDoor === 1) {
+                    nextLevel();
+                } else {
+                    endGame(false);
+                }
+            } else if (x >= 500 && x <= 600 && y >= 200 && y <= 400) {
+                // Door 2 clicked
+                if (correctDoor === 2) {
+                    nextLevel();
+                } else {
+                    endGame(false);
+                }
+            } else if (x >= 300 && x <= 500 && y >= 450 && y <= 510) {
+                // Quit Door clicked
+                quitGame();
+            }
+        }
+
+        function nextLevel() {
+            score *= 2;
+            stage++;
+            celebrationScreen.style.display = 'block';
+            setTimeout(() => {
+                celebrationScreen.style.display = 'none';
+                generateDoors();
+                draw();
+            }, 1500);
+        }
+
+        function endGame(isWin) {
+            isGameOver = true;
+            const gameOverScreen = document.getElementById('gameOverScreen');
+            gameOverScreen.style.display = 'block';
+            if (!isWin) {
+                document.getElementById('gameMessage').textContent = '모든 점수를 잃었습니다';
+                document.getElementById('finalScore').textContent = '';
+            }
+        }
+
+        function quitGame() {
+            isGameOver = true;
+            quit = true;
+            const gameOverScreen = document.getElementById('gameOverScreen');
+            gameOverScreen.style.display = 'block';
+            document.getElementById('gameMessage').textContent = '지금에 만족하셨습니다';
+            document.getElementById('finalScore').textContent = `Your Score: ${score}`;
+        }
+
+        function restartGame() {
+            isGameOver = false;
+            score = 100;
+            stage = 1;
+            quit = false;
+            generateDoors();
+            const gameOverScreen = document.getElementById('gameOverScreen');
+            gameOverScreen.style.display = 'none';
+            draw();
+        }
+
+        function draw() {
+            if (isGameOver) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawDoors();
+            drawScore();
+        }
+
+        canvas.addEventListener('click', event => {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            if (!isGameOver) {
+                handleDoorClick(x, y);
+            }
+        });
+
+        // Initialize game
+        function initGame() {
+            generateDoors();
+            draw();
+            bgm.play();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
