@@ -54,6 +54,9 @@
             border: none;
             cursor: pointer;
         }
+        audio {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -64,10 +67,25 @@
     </div>
     <div id="celebrationScreen" class="celebration">🎉 Success! 🎉</div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <audio id="successSound">
+        <source src="success-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="failSound">
+        <source src="fail-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="quitSound">
+        <source src="quit-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const celebrationScreen = document.getElementById('celebrationScreen');
+        const successSound = document.getElementById('successSound');
+        const failSound = document.getElementById('failSound');
+        const quitSound = document.getElementById('quitSound');
 
         let score = 100;
         let isGameOver = false;
@@ -143,6 +161,7 @@
         }
 
         function nextLevel() {
+            successSound.play();
             score *= 2;
             stage++;
             celebrationScreen.style.display = 'block';
@@ -158,12 +177,14 @@
             const gameOverScreen = document.getElementById('gameOverScreen');
             gameOverScreen.style.display = 'block';
             if (!isWin) {
+                failSound.play();
                 document.getElementById('gameMessage').textContent = '모든 점수를 잃었습니다';
                 document.getElementById('finalScore').textContent = '';
             }
         }
 
         function quitGame() {
+            quitSound.play();
             isGameOver = true;
             quit = true;
             const gameOverScreen = document.getElementById('gameOverScreen');
